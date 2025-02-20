@@ -48,4 +48,10 @@ Module BingoGame
         '
     End Function
 
+    Function BingoTracker(ballNumber As Integer, ballLetter As Integer, Optional clear As Boolean = False) As Boolean(,)
+        Static _bingoTracker(14, 4) As Boolean
+        'actual code here
+        Return _bingoTracker
+    End Function
+
 End Module
