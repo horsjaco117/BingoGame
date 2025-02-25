@@ -6,9 +6,9 @@ Option Strict On
 Option Explicit On
 
 'TODO
-'[ ] Display Bingo 
-'[ ] Draw a random ball that has not already been drawn
-'[ ] Update display to show all drawn balls
+'[x] Display Bingo 
+'[x] Draw a random ball that has not already been drawn
+'[x] Update display to show all drawn balls
 '[ ] Update display to show actual ball number
 '[ ] Refresh tracking with "C" or when all balls have been drawn
 
@@ -16,22 +16,49 @@ Option Explicit On
 Module BingoGame
 
     Sub Main()
-        DisplayBoard()
-        For i = 1 To 10
+        'DisplayBoard()
+        'For i = 1 To 10
 
-            DrawBall()
-            DisplayBoard()
-            Console.Read()
+        '    Console.Clear()
+        '    DrawBall()
+        '    DisplayBoard()
+
+        'Next
+        'Console.Read()
+        'BingoTracker(0, 0,, True) 'test that clear works 
+        'DisplayBoard()
+
+        Dim userInput As String
+
+        Do
             Console.Clear()
+            DisplayBoard()
+            Console.WriteLine()
+            'prompt
+            userInput = Console.ReadLine()
+            Select Case userInput
+                Case "d"
+                    DrawBall()
+                Case "c"
+                    BingoTracker(0, 0,, True)
+                    DrawBall(True)
+                Case Else
+                    'pass
 
-        Next
+            End Select
+
+
+        Loop Until userInput = "q"
+        Console.Clear()
+        Console.WriteLine("Have a nice day!")
 
     End Sub
 
-    Sub DrawBall()
+    Sub DrawBall(Optional clearCount As Boolean = False)
         Dim temp(,) As Boolean = BingoTracker(0, 0) 'Create a local copy of ball tracker array
         Dim currentBallNumber As Integer
         Dim currentBallLetter As Integer
+        Static ballCounter As Integer
 
         ''Get the row
         'currentBallNumber = randomNumberBetween(0, 14) 'rows compare to BingoTracker
@@ -45,20 +72,26 @@ Module BingoGame
             currentBallNumber = randomNumberBetween(0, 14)
             'Get the column
             currentBallLetter = randomNumberBetween(0, 4)
-        Loop Until temp(currentBallNumber, currentBallLetter) = False
+        Loop Until temp(currentBallNumber, currentBallLetter) = False Or ballCounter >= 75
         'Mark current ball as being drawn, updates the display
 
-        BingoTracker(currentBallNumber, currentBallLetter)
+        BingoTracker(currentBallNumber, currentBallLetter, True)
+        ballCounter += 1
 
         ' For debug write valid ball draws to console  
         Console.WriteLine($"The current row is {currentBallNumber} and the column is {currentBallLetter}")
 
     End Sub
 
+
+    ''' <summary>
+    ''' Iterates Through the tracker array and displays bingo board to the console
+    ''' </summary>
+
     Sub DisplayBoard()
         Dim temp As String = " |"
         Dim heading() As String = {"B", "I", "N", "G", "O"}
-        Dim tracker(,) As Boolean = BingoTracker(0, 0)
+        Dim tracker(,) As Boolean = BingoTracker(0, 0) '
         For Each letter In heading
             Console.Write(letter.PadLeft(3).PadRight(5))
         Next
@@ -95,8 +128,26 @@ Module BingoGame
         '
     End Function
 
-    Function BingoTracker(ballNumber As Integer, ballLetter As Integer, Optional clear As Boolean = False) As Boolean(,)
+    ''' <summary>
+    ''' Contains a persistent array that tracks all possible bingo balls
+    ''' and whether they have been drawn during the current game.
+    ''' </summary>
+    ''' <param name="ballNumber"></param>
+    ''' <param name="ballLetter"></param>
+    ''' <param name="clear"></param>
+    ''' <returns>Current Tracking Array</returns>
+
+    Function BingoTracker(ballNumber As Integer, ballLetter As Integer, Optional update As Boolean = False, Optional clear As Boolean = False) As Boolean(,)
         Static _bingoTracker(14, 4) As Boolean
+
+
+        If update Then
+            _bingoTracker(ballNumber, ballLetter) = True
+        End If
+
+        If clear Then
+            ReDim _bingoTracker(14, 4) 'clears the array. Could also loop through array and set all elements 
+        End If
         'actual code here
         _bingoTracker(ballNumber, ballLetter) = True
         Return _bingoTracker
