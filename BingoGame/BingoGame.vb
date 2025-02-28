@@ -90,8 +90,8 @@ Module BingoGame
     Sub DisplayBoard()
 
         Console.OutputEncoding = System.Text.Encoding.UTF8 'For special characters
-        Dim temp As String = " |"
-        Dim heading() As String = {"B", "I", "N", "G", "O"}
+        'Dim temp As String = " |"
+        Dim heading() As String = {ChrW(&H2660), ChrW(&H2665), ChrW(&H2663), ChrW(&H2666)}
         Dim tracker(,) As Boolean = BingoTracker(0, 0) '
         Dim cardColumn() As String = {" ", "2", "3", "4", "5", "6", "7", "8", "9",
             "10", "J", "Q", "K", "A"}
@@ -99,38 +99,59 @@ Module BingoGame
         Dim hearts As String = ChrW(&H2665)
         Dim clubs As String = ChrW(&H2663)
         Dim diamonds As String = ChrW(&H2666)
-        'Console.WriteLine(spades & hearts & clubs & diamonds)
 
-        Console.WriteLine("Card Suits: " & spades & " " & hearts & " " & diamonds & " " & clubs)
+        Console.Write("    ")
+        For Each suit In heading
+            Console.Write(suit.PadLeft(6))
 
-        For Each letter In heading
-            Console.Write(letter.PadLeft(3).PadRight(5))
         Next
-
-        For Each letter In cardColumn
-            Console.WriteLine(letter.PadLeft(0).PadRight(0))
-        Next
-
         Console.WriteLine()
-        Console.WriteLine(StrDup(25, "_"))
-        For currentNumber = 0 To 14 'Fix, loop through the array
-            For currentLetter = 0 To 4 'Fix 
 
-                If tracker(currentNumber, currentLetter) Then
-                    temp = "X |" 'Displary for drawn balls
+        Console.WriteLine(StrDup(40, "-"))
 
-                Else
-                    temp = " |" 'Display for not drawn balls
-                End If
+        For currentNumber = 0 To 13
+            Console.Write(cardColumn(currentNumber).PadRight(6))
 
-                temp = temp.PadLeft(5)
-                Console.Write(temp)
+            For currentletter = 0 To 3
+                Dim temp As String = If(tracker(currentNumber, currentletter), " X |", " |")
+                Console.Write(temp.PadLeft(6))
 
             Next
             Console.WriteLine()
         Next
-
     End Sub
+    'Console.WriteLine(spades & hearts & clubs & diamonds)
+
+    'Console.WriteLine("Card Suits: " & spades & " " & hearts & " " & diamonds & " " & clubs) 'test
+
+    '    For Each letter In heading
+    '        Console.Write(letter.PadLeft(3).PadRight(5))
+    '    Next
+
+    '    For Each letter In cardColumn
+    '        Console.WriteLine(letter.PadLeft(0).PadRight(0))
+    '    Next
+
+    '    Console.WriteLine()
+    '    Console.WriteLine(StrDup(25, "_"))
+    '    For currentNumber = 0 To 14 'Fix, loop through the array
+    '        For currentLetter = 0 To 4 'Fix 
+
+    '            If tracker(currentNumber, currentLetter) Then
+    '                temp = "X |" 'Displary for drawn balls
+
+    '            Else
+    '                temp = " |" 'Display for not drawn balls
+    '            End If
+
+    '            temp = temp.PadLeft(5)
+    '            Console.Write(temp)
+
+    '        Next
+    '        Console.WriteLine()
+    '    Next
+
+    'End Sub
 
     Function randomNumberBetween(min As Integer, max As Integer) As Integer
         Dim rand As New Random()
