@@ -60,26 +60,25 @@ Module BingoGame
         Dim currentBallLetter As Integer
         Static ballCounter As Integer
 
-        ''Get the row
-        'currentBallNumber = randomNumberBetween(0, 14) 'rows compare to BingoTracker
+        If clearCount Then
+            ballCounter = 0
+        Else
 
-        ''Get the column
-        'currentBallLetter = randomNumberBetween(0, 4)
+            ' Loop until the current random ball has not already been marked as drawn
+            Do
+                'Get the row
+                currentBallNumber = randomNumberBetween(0, 14)
+                'Get the column
+                currentBallLetter = randomNumberBetween(0, 4)
+            Loop Until temp(currentBallNumber, currentBallLetter) = False Or ballCounter >= 75
+            'Mark current ball as being drawn, updates the display
 
-        ' Loop until the current random ball has not already been marked as drawn
-        Do
-            'Get the row
-            currentBallNumber = randomNumberBetween(0, 14)
-            'Get the column
-            currentBallLetter = randomNumberBetween(0, 4)
-        Loop Until temp(currentBallNumber, currentBallLetter) = False Or ballCounter >= 75
-        'Mark current ball as being drawn, updates the display
+            BingoTracker(currentBallNumber, currentBallLetter, True)
+            ballCounter += 1
 
-        BingoTracker(currentBallNumber, currentBallLetter, True)
-        ballCounter += 1
-
-        ' For debug write valid ball draws to console  
-        Console.WriteLine($"The current row is {currentBallNumber} and the column is {currentBallLetter}")
+            ' For debug write valid ball draws to console  
+            Console.WriteLine($"The current row is {currentBallNumber} and the column is {currentBallLetter}")
+        End If
 
     End Sub
 
@@ -89,12 +88,29 @@ Module BingoGame
     ''' </summary>
 
     Sub DisplayBoard()
+
+        Console.OutputEncoding = System.Text.Encoding.UTF8 'For special characters
         Dim temp As String = " |"
         Dim heading() As String = {"B", "I", "N", "G", "O"}
         Dim tracker(,) As Boolean = BingoTracker(0, 0) '
+        Dim cardColumn() As String = {" ", "2", "3", "4", "5", "6", "7", "8", "9",
+            "10", "J", "Q", "K", "A"}
+        Dim spades As String = ChrW(&H2660)
+        Dim hearts As String = ChrW(&H2665)
+        Dim clubs As String = ChrW(&H2663)
+        Dim diamonds As String = ChrW(&H2666)
+        'Console.WriteLine(spades & hearts & clubs & diamonds)
+
+        Console.WriteLine("Card Suits: " & spades & " " & hearts & " " & diamonds & " " & clubs)
+
         For Each letter In heading
             Console.Write(letter.PadLeft(3).PadRight(5))
         Next
+
+        For Each letter In cardColumn
+            Console.WriteLine(letter.PadLeft(0).PadRight(0))
+        Next
+
         Console.WriteLine()
         Console.WriteLine(StrDup(25, "_"))
         For currentNumber = 0 To 14 'Fix, loop through the array
@@ -116,17 +132,11 @@ Module BingoGame
 
     End Sub
 
-    Function randomNumberBetween(max As Integer, min As Integer) As Integer 'We need to declare return type
-        Dim temp As Single 'The single type helps work with the randomize stuff
-        Randomize()
-        temp = Rnd()
-        temp *= (max + 1) - min  'supposedly adding the one increase the max by 1. to fix inclusivity of max/min
-
-        temp += min - 1 'This is supposed to shift the min down by 1
-
-        Return CInt(Math.Floor(temp)) 'min isn't included
-        '
+    Function randomNumberBetween(min As Integer, max As Integer) As Integer
+        Dim rand As New Random()
+        Return rand.Next(min, max + 1) ' Ensures max is included
     End Function
+
 
     ''' <summary>
     ''' Contains a persistent array that tracks all possible bingo balls
@@ -137,7 +147,9 @@ Module BingoGame
     ''' <param name="clear"></param>
     ''' <returns>Current Tracking Array</returns>
 
-    Function BingoTracker(ballNumber As Integer, ballLetter As Integer, Optional update As Boolean = False, Optional clear As Boolean = False) As Boolean(,)
+    Function BingoTracker(ballNumber As Integer, ballLetter As Integer,
+                          Optional update As Boolean = False, Optional clear As Boolean = False) _
+                          As Boolean(,)
         Static _bingoTracker(14, 4) As Boolean
 
 
@@ -149,7 +161,7 @@ Module BingoGame
             ReDim _bingoTracker(14, 4) 'clears the array. Could also loop through array and set all elements 
         End If
         'actual code here
-        _bingoTracker(ballNumber, ballLetter) = True
+        '_bingoTracker(ballNumber, ballLetter) = True
         Return _bingoTracker
     End Function
 
